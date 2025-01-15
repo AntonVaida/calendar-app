@@ -1,0 +1,12 @@
+export const colors = {
+ MAIN_BACKGROUND:'rgb(247,249,252)',
+ BLUE_BACKGROUND: 'rgb(8,89,209)',
+ FONTS_COLOR:'rgb(232,234,237)',
+ GREY_FOR_BORDER:'rgb(221,227,235)',
+ BLACK:'#000',
+ SECONARY_FONTS_COLOR: 'rgb(31,31,31)',
+ WHITE: 'rgb(255,255,255)',
+ GREEN_COLOR: "rgb(10, 128, 67)",
+ YELLOW_COLOR: "rgb(250, 189, 5)",
+ ERROR_COLOR: "rgb(255, 84, 84)"
+}
