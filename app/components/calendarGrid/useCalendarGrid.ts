@@ -1,31 +1,30 @@
 
-import { useEffect, useRef, useMemo } from 'react';
-import { useAppDispatch } from '../../hooks';
-import { datesActions } from '../../store/dates';
-import { useAppSelector } from '../../hooks';
-import { selectAllHolidayList, selectDates } from '../../store/dates';
-import { CalendarType } from '@/app/shared/types/CalendarType';
+import { useEffect, useRef, useMemo, useState } from 'react';
+import { useAppDispatch} from '../../hooks';
+import { activitiesActions } from '../../store/activity';
 import { useContainerSize } from '../../hooks';
 import { COUNT_DAYS_PER_WEEK } from '@/app/utils';
 import { DAYS_OF_WEEK_HEIGHT } from '../daysOfTheWeekGridItem';
+import { ActivityType } from '@/app/shared/types/ActivityType';
+import { DragStartEvent, DragOverEvent, Over, Active } from '@dnd-kit/core';
 
 
 export const useCalendarGrid = ({
   year,
-  month,
-  calendarType,
-  weekCoefficient
+  dates
 }: {
-  year: number, 
-  month: number, 
-  calendarType: CalendarType, 
-  weekCoefficient: number
+  year: number,
+  dates: Date[]
 }) => {
   const containerRef = useRef(null);
   const dispatch = useAppDispatch();
-  const dates = useAppSelector(selectDates);
-  const allHolidayList = useAppSelector(selectAllHolidayList);
   const {containerHeight} = useContainerSize(containerRef);
+  const [activeActivity, setActiveActivity] = useState<ActivityType | null>(null);
+
+  useEffect(() => {
+    dispatch(activitiesActions.getAllHolidayList(year));
+  }, [year, dispatch])
+
 
   const gridItemsHeight = useMemo(()=> {
     if (containerHeight && dates?.length) {
@@ -34,26 +33,32 @@ export const useCalendarGrid = ({
     }
   }, [containerHeight, dates]);
 
-    console.log('useCalendar', {containerHeight, gridItemsHeight})
 
-  useEffect(() => {
-    dispatch(datesActions.getAllHolidayList(year));
-  }, [year, dispatch])
+    
+  const onDragEnd = () => {
+    setActiveActivity(null);
+  }
 
-  useEffect(() => {
-    dispatch(datesActions.processCalendarDates({year, month, calendarType, weekCoefficient, allHolidayList}))
-  }, [
-    dispatch,
-    year, 
-    month,
-    calendarType,
-    weekCoefficient,
-    allHolidayList
-  ])
+  const onDragStart = (event: DragStartEvent) => {
+    if (event.active.data.current?.type === "activity") {
+      setActiveActivity(event.active.data.current.activity);
+      return
+    }
+  }
+
+  const onDragOver = (event: DragOverEvent) => {
+    const { active, over } = event;
+
+    if(!over) return;
+    dispatch(activitiesActions.dragAndDrop({activeActivity, active: {id: active.id, data: active.data} as Active, over: {id: over.id, data: over.data} as Over}));
+  }
 
   return {
-    dates,
     containerRef,
-    gridItemsHeight
+    gridItemsHeight,
+    onDragEnd,
+    onDragStart,
+    onDragOver,
+    activeActivity,
   }
 }

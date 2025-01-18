@@ -5,22 +5,21 @@ import { useDayModal } from "./useDayModal";
 import { AddActivitiesFormFields } from "../addActivitiesFormFields";
 import { SaveButton } from "../../ui-components";
 import { CloseButton } from "../../ui-components";
-import { DateType } from "@/app/shared/types/DateType";
 
 export const DayModal = ({
   isOpen, 
   handleClose,
-  data
+  date
 }: {
   isOpen: boolean,
   handleClose: () => void
-  data: DateType
+  date: Date
 }) => {
   const {
     register, 
     submitHandler, 
     errors,
-  } = useDayModal({data, handleClose});
+  } = useDayModal({date, handleClose});
 
   return (
     <Modal

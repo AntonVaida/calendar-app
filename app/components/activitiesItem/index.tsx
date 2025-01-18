@@ -6,16 +6,45 @@ export const ActivitiesItem = ({
   index, 
   activity
 }: {
-  index: number, 
+  index: string, 
   activity: ActivityType
 }) => {
   const {
     handleClick,
-    activityTitle
+    activityTitle,
+    setNodeRef, 
+    attributes, 
+    listeners, 
+    isDragging,
+    style
   } = useActivitiesItem({activity})
+
+  if (isDragging) {
+    return (
+      <Box
+        style={style}
+        key={index} 
+        sx={(theme) => ({
+          height: "20px",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          backgroundColor: activity?.isHoliday ? theme.palette.primary.dark : theme.palette.secondary.main,
+          borderRadius: "10px",
+          marginTop: "5px",
+          cursor: "pointer",
+          opacity: "50%"
+        })}
+      />
+    )
+  }
 
   return (
     <Box
+      ref={setNodeRef}
+      {...attributes}
+      {...listeners}
+      style={style}
       onClick={handleClick}
       key={index} 
       sx={(theme) => ({
@@ -26,7 +55,6 @@ export const ActivitiesItem = ({
         backgroundColor: activity?.isHoliday ? theme.palette.primary.dark : theme.palette.secondary.main,
         borderRadius: "10px",
         marginTop: "5px",
-        zIndex: 5,
         cursor: "pointer"
       })}
     >

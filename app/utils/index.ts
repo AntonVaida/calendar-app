@@ -4,5 +4,7 @@ export * from './colors';
 export * from './getCalendarItemBorderConfiguration';
 export * from './dateFormatter';
 export * from './textLimitHelper';
-export * from './updateActivitiesParser';
-export * from './holidayToActivityParser'
+export * from './holidayToActivityParser';
+export * from './activityUpdateParser';
+export * from './swapOrder';
+export * from './activityFilter';

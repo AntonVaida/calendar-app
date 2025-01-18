@@ -1,20 +1,19 @@
 import { dateFormatter } from "@/app/utils";
 import { CalendarType } from "@/app/shared/types/CalendarType";
-import { useAppSelector } from "@/app/hooks";
-import { selectDates } from "@/app/store/dates";
 
 export const useCalendarHeader = ({
   month, 
   year, 
-  calendarType
+  calendarType,
+  dates
 }: {
   month: number, 
   year: number,
-  calendarType: CalendarType
+  calendarType: CalendarType,
+  dates: Date[]
 }) => {
-  const dates = useAppSelector(selectDates);
-  const firstDate = dates[0]?.date;
-  const lastDate = dates[dates?.length - 1]?.date;
+  const firstDate = dates[0];
+  const lastDate = dates[dates?.length - 1];
 
   const formattedDate = dateFormatter({
     month, 

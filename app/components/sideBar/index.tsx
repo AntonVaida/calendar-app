@@ -1,35 +1,36 @@
 import SwipeableDrawer from '@mui/material/SwipeableDrawer';
 import { Box, Typography } from '@mui/material';
-import { DateType } from '../../shared/types/DateType';
 import { useSideBar } from './useSideBar';
 import { AddButton, CloseButton } from '@/app/ui-components';
 import { DayModal } from '../dayModal';
 import { SideBarActivitiesItem } from '../sideBarActivitiesItem';
+import { useDroppable } from '@dnd-kit/core';
 
 export const SideBar = ({
   isOpen, 
   handleSideBarClose, 
   handleSideBarOpen, 
-  data
+  date
 }: {
   isOpen: boolean, 
   handleSideBarClose: () => void, 
   handleSideBarOpen: () => void,
-  data: DateType
+  date: Date
 }) => {
   const { 
     formattedDate, 
     isModalOpen,
     openModalHandler,
-    closeModalHandler 
-  } = useSideBar({data});
+    closeModalHandler,
+    filteredActivities
+  } = useSideBar({date});
 
   return (
     <>
       <DayModal
         isOpen={isModalOpen} 
         handleClose={closeModalHandler}
-        data={data}
+        date={date}
       />
       <SwipeableDrawer
         anchor={'right'}
@@ -58,16 +59,18 @@ export const SideBar = ({
             </Typography>
             <CloseButton onClick={handleSideBarClose} />
           </Box>
-          <Box sx={{
-            marginTop: "20px",
-            height: "100%",
-            overflowY: "auto",
-            overflowX: "hidden",
-            boxSizing: "border-box",
-          }}>
-            {data?.activities?.map((activity, index) => (
-              <SideBarActivitiesItem activity={activity} key={index} data={data} />
-            ))}
+          <Box 
+            sx={{
+              marginTop: "20px",
+              height: "100%",
+              overflowY: "auto",
+              overflowX: "hidden",
+              boxSizing: "border-box",
+            }}
+          >
+            {/* {filteredActivities?.map((activity, index) => (
+              <SideBarActivitiesItem activity={activity} key={index} />
+            ))} */}
           </Box>
         </Box>
       </SwipeableDrawer>

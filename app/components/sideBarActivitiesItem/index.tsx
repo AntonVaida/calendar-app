@@ -1,25 +1,43 @@
 import { Box, Typography } from '@mui/material';
 import { ActivityType } from '@/app/shared/types/ActivityType';
 import { CloseButton } from '@/app/ui-components';
-import { DateType } from '@/app/shared/types/DateType';
 import { useSideBarActivitiesItem } from './useSideBarActivitiesItem';
+import {CSS} from '@dnd-kit/utilities';
+import { useSortable } from '@dnd-kit/sortable';
 
 export const SideBarActivitiesItem = ({
   activity,
-  data
 }: {
   activity: ActivityType,
-  data: DateType
 }) => {
-  const { handleDeleteActivity } = useSideBarActivitiesItem({data, activity})
+  const { handleDeleteActivity } = useSideBarActivitiesItem({ activity})
+    const {
+    setNodeRef, 
+    attributes, 
+    listeners, 
+    transform,
+    transition,
+    isDragging
+  } = useSortable({
+      id: activity?.id, 
+      data: {type: "activity-side-bar", activity},
+      disabled: activity?.isHoliday
+    });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
 
   return (
-    <Box sx={{
-      marginTop: "10px",
-      display: "flex",
-      justifyContent: "space-between",
-      alignItems: "center"
-    }}>
+    <Box 
+      sx={{
+        marginTop: "10px",
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center"
+      }}
+    >
       <Box 
         sx={(theme) => ({
           padding: "10px",

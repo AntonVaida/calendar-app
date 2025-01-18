@@ -1,17 +1,16 @@
 import { useForm } from "react-hook-form";
-import { DateType } from "@/app/shared/types/DateType";
-import { datesActions } from "@/app/store/dates";
+import { activitiesActions } from "@/app/store/activity";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
-import { selectDates } from "@/app/store/dates";
+import { selectActivityList } from "@/app/store/activity";
 
 export type Inputs = {
   title: string,
   description: string
 }
 
-export const useDayModal = ({data, handleClose}: {data: DateType, handleClose: () => void}) => {
+export const useDayModal = ({date, handleClose}: {date: Date, handleClose: () => void}) => {
   const dispatch = useAppDispatch();
-  const dates = useAppSelector(selectDates);
+  const activityList = useAppSelector(selectActivityList);
 
   const {
     register,
@@ -26,7 +25,7 @@ export const useDayModal = ({data, handleClose}: {data: DateType, handleClose: (
   const submitHandler = handleSubmit((submitData) => {
     try {
       const { title, description } = submitData;
-      dispatch(datesActions.addNewActivities({title, description, date: data?.date, dateList: dates}));
+      dispatch(activitiesActions.addNewActivities({title, description, date: date.toISOString(), activityList}));
     } catch (e: unknown) {
       console.error(e)
     } finally {
