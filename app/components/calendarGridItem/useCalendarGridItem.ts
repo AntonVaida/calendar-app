@@ -1,14 +1,12 @@
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { getCalendarItemBorderConfiguration } from "@/app/utils/getCalendarItemBorderConfiguration";
 import { CalendarType } from "@/app/shared/types/CalendarType";
 import { useAppSelector } from "@/app/hooks";
-import { selectActivityList } from "@/app/store/activity";
-import { activityFilter } from "@/app/utils";
-import { useDroppable } from "@dnd-kit/core";
 import { makeSelectActivityListPerDate } from "@/app/store/activity";
-import { useSelectorCreator } from "@rbxts/roact-reflex";
 import { shallowEqual } from "react-redux";
+import { checkTheSameDay } from "@/app/utils/checkTheSameDay";
+import { monitorForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
 
 
 export const useCalendarGridItem = ({
@@ -20,6 +18,8 @@ export const useCalendarGridItem = ({
   index: number,
   calendarType: CalendarType
 }) => {
+ const ref = useRef(null);
+ const [highlight, setHighlight] = useState(false);
  const [isOpen, setIsOpen] = useState(false);
  const calendarItemBorderConfiguration = getCalendarItemBorderConfiguration(index, calendarType);
 
@@ -27,13 +27,41 @@ export const useCalendarGridItem = ({
     return makeSelectActivityListPerDate(date);
 }, [date]);
 
- const filteredActivities = useAppSelector(selector, (prev, next) => JSON.stringify(prev) === JSON.stringify(next));
+const filteredActivities = useAppSelector(selector, shallowEqual);
 
- console.count('MyComponent renders')
-  const { setNodeRef } = useDroppable({
-    id: date.toISOString(),
-    data: {type: "date", date: date.toISOString()}
-  });
+useEffect(() => {
+    const element = ref.current;
+
+    if (!element) return;
+
+    const monitorConfig = {
+      element,
+      getData() {
+
+      },
+      // @ts-expect-error payload
+      onDrag(payload) {
+        const { location } = payload;
+
+        const target = location.current.dropTargets[0];
+
+        if (!target) {
+          return;
+        }
+
+        if (checkTheSameDay({firstDate: new Date(target.data.date), secondDate: new Date(date)})) {
+          setHighlight(true);
+        } else {
+          setHighlight(false);
+        }
+      },
+      onDrop() {
+        setHighlight(false);
+      },
+    }
+
+    return monitorForElements(monitorConfig);
+  }, [date]);
 
  const inputDate = date;
  const today = new Date();
@@ -44,10 +72,6 @@ export const useCalendarGridItem = ({
 
   const parsedDateValue = date.getDate();
 
-
-  const activitiesId = useMemo(() => {
-    return filteredActivities?.map(activity => activity?.id)
-  }, [filteredActivities])
 
   const handleSideBarOpen = () => {
     setIsOpen(true);
@@ -65,7 +89,7 @@ export const useCalendarGridItem = ({
   handleSideBarClose,
   isOpen,
   filteredActivities,
-  setNodeRef,
-  activitiesId
+  ref,
+  highlight
  }
 }

@@ -4,7 +4,6 @@ import { useSideBar } from './useSideBar';
 import { AddButton, CloseButton } from '@/app/ui-components';
 import { DayModal } from '../dayModal';
 import { SideBarActivitiesItem } from '../sideBarActivitiesItem';
-import { useDroppable } from '@dnd-kit/core';
 
 export const SideBar = ({
   isOpen, 
@@ -44,14 +43,14 @@ export const SideBar = ({
           backgroundColor: theme.palette.primary.main,
           paddingTop: "20px",
           paddingBottom: "20px",
-          paddingLeft: "15px",
-          paddingRight: "15px"
         })}>
           <Box sx={{
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
             height: "28px",
+            paddingLeft: "15px",
+            paddingRight: "15px"
           }}>
             <AddButton onClick={openModalHandler} />
             <Typography id="modal-modal-title" variant="caption">
@@ -62,15 +61,17 @@ export const SideBar = ({
           <Box 
             sx={{
               marginTop: "20px",
-              height: "100%",
+              maxHeight: "90%",
+              boxSizing: "border-box",
               overflowY: "auto",
               overflowX: "hidden",
-              boxSizing: "border-box",
+              paddingLeft: "15px",
+              paddingRight: "15px"
             }}
           >
-            {/* {filteredActivities?.map((activity, index) => (
+            {filteredActivities?.map((activity, index) => (
               <SideBarActivitiesItem activity={activity} key={index} />
-            ))} */}
+            ))}
           </Box>
         </Box>
       </SwipeableDrawer>

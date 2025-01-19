@@ -10,9 +10,8 @@ import { holidayToActivityParser } from "@/app/utils";
 import { v4 as uuidv4 } from 'uuid';
 import { selectActivityList } from "./selectors";
 import { checkTheSameDay } from "@/app/utils/checkTheSameDay";
-import { Over, Active } from "@dnd-kit/core";
-import { arrayMove } from "@dnd-kit/sortable";
-import { activityFilter } from "@/app/utils";
+import { current } from 'immer';
+import { dragAndDropHelper } from "@/app/utils";
 
 type State = RootState['activities'];
 
@@ -67,71 +66,25 @@ const { reducer, actions } = createSlice({
       state.error = errorStatus;
     },
     dragAndDrop: (state, { payload }: PayloadAction<{
-      active: Active,
-      over: Over | null,
-      activeActivity: ActivityType | null
+      draggableItem: ActivityType,
+      toNewCalendarDate?: boolean;
+      targetDate?: string,
+      targetActionId?: string
     }>) => {
-      const { active, over, activeActivity } = payload;
-      const activityList = state.activityList;
+      const { draggableItem, toNewCalendarDate, targetDate, targetActionId } = payload;
 
-      if (!over || !activeActivity) return;
+      const activityList = current(state.activityList);
+      const updatedActivities = dragAndDropHelper({
+        activityList, 
+        draggableItem, 
+        toNewCalendarDate, 
+        targetDate, 
+        targetActionId
+      })
 
-      const activeId = active?.id;
-      const overId = over?.id;
+      if (!updatedActivities) return;
 
-      if (activeId === overId) return;
-
-      const isActiveAActivity = active.data.current?.type === 'activity';
-      const isOverAActivity = over.data.current?.type === 'activity';
-
-      let updatedActivitiesList = [...activityList];
-
-      if (isActiveAActivity && isOverAActivity) {
-        const targetDate = over.data.current?.activity?.date;
-        const activeActivityData = activityList.find(activity => activity?.id === activeId);
-        
-        if (!activeActivityData || !targetDate) return;
-
-        updatedActivitiesList = [
-          ...updatedActivitiesList.filter(activity => activity?.id !== activeId),
-          { ...activeActivityData, date: targetDate }
-        ];
-
-        const filteredActivities = activityFilter({ activityList: updatedActivitiesList, date: new Date(targetDate) });
-        const overActivityIndex = filteredActivities?.findIndex(activity => activity?.id === overId);
-        const activeActivityIndex = filteredActivities?.findIndex(activity => activity?.id === activeId);
-
-        if (
-          overActivityIndex === -1 ||
-          activeActivityIndex === -1 ||
-          over.data.current?.activity?.isHoliday
-        ) return;
-
-        const movedActivityList = arrayMove(filteredActivities, activeActivityIndex, overActivityIndex)
-          ?.map((activity, index) => ({
-            ...activity,
-            order: index,
-          }));
-
-        const idsUpdatedActivities = movedActivityList?.map(activity => activity?.id);
-        const activitiesFilteredList = activityList.filter(activity => !idsUpdatedActivities.includes(activity?.id));
-
-        updatedActivitiesList = [...activitiesFilteredList, ...movedActivityList];
-      }
-
-      if (isActiveAActivity && over.data.current?.type === 'date') {
-        const targetDate = over.data.current?.date || null;
-        const activeActivityData = activityList.find(activity => activity?.id === activeId);
-
-        if (!targetDate || !activeActivityData) return;
-
-        updatedActivitiesList = [
-          ...updatedActivitiesList.filter(activity => activity?.id !== activeId),
-          { ...activeActivityData, date: targetDate }
-        ];
-      }
-
-      state.activityList = updatedActivitiesList;
+      state.activityList = updatedActivities;
     },
     addNewActivities: (state, { payload }: PayloadAction<{
       date: string, 

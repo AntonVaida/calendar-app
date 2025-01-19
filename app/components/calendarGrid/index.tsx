@@ -6,10 +6,6 @@ import Grid from '@mui/material/Grid2';
 import { useCalendarGrid } from './useCalendarGrid';
 import { CalendarGridItem } from '../calendarGridItem';
 import { DaysOfTheWeekGrid } from '../daysOfTheWeekGrid';
-import {DndContext,} from '@dnd-kit/core';
-import { createPortal } from 'react-dom';
-import { ActivitiesItem } from '../activitiesItem';
-import { DragOverlay } from '@dnd-kit/core';
 
 export const CalendarGrid = ({
   year, 
@@ -23,10 +19,6 @@ export const CalendarGrid = ({
   const { 
     containerRef,
     gridItemsHeight,
-    onDragEnd,
-    onDragStart,
-    onDragOver,
-    activeActivity
   } = useCalendarGrid({
     year,
     dates
@@ -42,54 +34,38 @@ return (
         width: "100vw",
       })}
     >
-      <Box ref={containerRef} sx={{
-        height: "100%",
-        display: "flex",
-        flexDirection: "column",
-        borderRadius: 3,
-        overflow: "hidden",
-        marginBottom: "30px",
-        marginLeft: "30px",
-        marginRight: "30px"
-      }}>
-      <DaysOfTheWeekGrid />
-      <Grid 
+      <Box ref={containerRef} 
         sx={{
-          boxSizing: "border-box",
-          flexGrow: 1,
-        }} 
-        container
-        columns={7}
+          height: "calc(100% - 30px)",
+          display: "flex",
+          flexDirection: "column",
+          borderRadius: 3,
+          overflow: "hidden",
+          marginBottom: "30px",
+          marginLeft: "30px",
+          marginRight: "30px"
+        }}
       >
-        <DndContext 
-          onDragEnd={onDragEnd} 
-          onDragStart={onDragStart}
-          onDragOver={onDragOver}
+        <DaysOfTheWeekGrid />
+        <Grid 
+          sx={{
+            boxSizing: "border-box",
+            flexGrow: 1,
+            backgroundColor: "red",
+          }} 
+          container
+          columns={7}
         >
-        {dates?.map((date, index) => (
-          <CalendarGridItem 
-            date={date} 
-            index={index} 
-            key={index} 
-            calendarType={calendarType}
-            gridItemsHeight={gridItemsHeight}
-          />
-        ))}
-           {typeof window !== "undefined" &&
-            createPortal(
-             // @ts-expect-error: DragOverlay expects 'never'
-              <DragOverlay>
-                {activeActivity ? (
-                  <ActivitiesItem
-                    activity={activeActivity}
-                    index={activeActivity?.id}
-                  /> 
-                ) : null}
-              </DragOverlay>,
-              document.body
-            )}
-        </DndContext>
-      </Grid>
+          {dates?.map((date, index) => (
+            <CalendarGridItem 
+              date={date} 
+              index={index} 
+              key={index} 
+              calendarType={calendarType}
+              gridItemsHeight={gridItemsHeight}
+            />
+          ))}
+        </Grid>
       </Box>
     </Box>
   );

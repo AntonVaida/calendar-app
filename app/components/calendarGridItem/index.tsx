@@ -5,7 +5,7 @@ import { Box, Typography } from '@mui/material';
 import { useCalendarGridItem } from './useCalendarGridItem';
 import { CalendarType } from '@/app/shared/types/CalendarType';
 import { ActivitiesItem } from '@/app/components/activitiesItem';
-import {SortableContext} from '@dnd-kit/sortable';
+import { EmptyActivityItem } from '../emptyActivityItem';
 
 export const CalendarGridItem = ({
   date,
@@ -26,9 +26,10 @@ export const CalendarGridItem = ({
     handleSideBarClose,
     isOpen,
     filteredActivities,
-    setNodeRef,
-    activitiesId
+    ref,
+    highlight
   } = useCalendarGridItem({date, index, calendarType});
+
 
   return (
     <Fragment>
@@ -39,19 +40,19 @@ export const CalendarGridItem = ({
         date={date}
       />
       <Grid
-        ref={setNodeRef}
         onClick={handleSideBarOpen}
         size={1} 
         key={index} 
         sx={(theme) => ({
-          backgroundColor: theme.palette.primary.light,
+          backgroundColor: highlight ? theme.palette.secondary.dark : theme.palette.primary.light,
           ...calendarItemBorderConfiguration,
           borderColor: theme.palette.secondary.dark,
           borderStyle: "solid",
           height: gridItemsHeight ? `${gridItemsHeight}px` : "100%"
         })}
       >
-        <Box 
+        <Box
+          ref={ref}
           sx={{
             height: gridItemsHeight ? `${gridItemsHeight}px` : "100%",
             padding: "10px",
@@ -75,7 +76,7 @@ export const CalendarGridItem = ({
               justifyContent: "center",
               alignItems: "center",
               boxSizing: "border-box",
-              backgroundColor: isToday ? theme.palette.secondary.light : theme.palette.primary.light,
+              backgroundColor: isToday ? theme.palette.secondary.light : "transparent",
             })}>
               <Typography variant={isToday ? "body2" : "body1"}>
                 {parsedDateValue}
@@ -87,16 +88,13 @@ export const CalendarGridItem = ({
                 maxHeight: "100%",
                 boxSizing: "border-box",
                 overflowY: "auto",
-                overflowX: "hidden",
+                overflowX: "hidden"
               }}>
-              {// @ts-expect-error: DragOverlay expects 'never'
-              <SortableContext items={activitiesId}>
                 {filteredActivities?.map((activity) => (
                   <ActivitiesItem index={activity?.id}  activity={activity} key={activity?.id} />
                 ))}
-              </SortableContext>
-              }
             </Box>
+            <EmptyActivityItem date={date} />
         </Box>
       </Grid>
     </Fragment>
