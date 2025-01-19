@@ -1,5 +1,5 @@
-import { DateState } from "./DateState";
+import { ActivityState } from "./ActivityState";
 
 export type RootState = {
-  'dates': DateState,
+  'activities': ActivityState,
 }

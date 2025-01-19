@@ -9,25 +9,21 @@ import { DaysOfTheWeekGrid } from '../daysOfTheWeekGrid';
 
 export const CalendarGrid = ({
   year, 
-  month, 
   calendarType, 
-  weekCoefficient
+  dates
   }: {
   year: number, 
-  month: number, 
   calendarType: CalendarType, 
-  weekCoefficient: number
+  dates: Date[]
   }) => {
   const { 
-    dates, 
-    containerRef, 
-    gridItemsHeight 
+    containerRef,
+    gridItemsHeight,
   } = useCalendarGrid({
-    year, 
-    month, 
-    calendarType, 
-    weekCoefficient
+    year,
+    dates
   });
+    
 
 return (
     <Box 
@@ -38,35 +34,38 @@ return (
         width: "100vw",
       })}
     >
-      <Box ref={containerRef} sx={{
-        height: "100%",
-        display: "flex",
-        flexDirection: "column",
-        borderRadius: 3,
-        overflow: "hidden",
-        marginBottom: "30px",
-        marginLeft: "30px",
-        marginRight: "30px"
-      }}>
-      <DaysOfTheWeekGrid />
-      <Grid 
+      <Box ref={containerRef} 
         sx={{
-          boxSizing: "border-box",
-          flexGrow: 1,
-        }} 
-        container
-        columns={7}
+          height: "calc(100% - 30px)",
+          display: "flex",
+          flexDirection: "column",
+          borderRadius: 3,
+          overflow: "hidden",
+          marginBottom: "30px",
+          marginLeft: "30px",
+          marginRight: "30px"
+        }}
       >
-        {dates?.map((data, index) => (
-          <CalendarGridItem 
-            data={data} 
-            index={index} 
-            key={index} 
-            calendarType={calendarType}
-            gridItemsHeight={gridItemsHeight}
-          />
-        ))}
-      </Grid>
+        <DaysOfTheWeekGrid />
+        <Grid 
+          sx={{
+            boxSizing: "border-box",
+            flexGrow: 1,
+            backgroundColor: "red",
+          }} 
+          container
+          columns={7}
+        >
+          {dates?.map((date, index) => (
+            <CalendarGridItem 
+              date={date} 
+              index={index} 
+              key={index} 
+              calendarType={calendarType}
+              gridItemsHeight={gridItemsHeight}
+            />
+          ))}
+        </Grid>
       </Box>
     </Box>
   );

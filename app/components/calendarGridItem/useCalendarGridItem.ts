@@ -1,29 +1,77 @@
 
-import { useState } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { getCalendarItemBorderConfiguration } from "@/app/utils/getCalendarItemBorderConfiguration";
-import { DateType } from "@/app/shared/types/DateType";
 import { CalendarType } from "@/app/shared/types/CalendarType";
+import { useAppSelector } from "@/app/hooks";
+import { makeSelectActivityListPerDate } from "@/app/store/activity";
+import { shallowEqual } from "react-redux";
+import { checkTheSameDay } from "@/app/utils/checkTheSameDay";
+import { monitorForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
+
 
 export const useCalendarGridItem = ({
-  data, 
+  date, 
   index, 
   calendarType
 }: {
-  data: DateType, 
+  date: Date, 
   index: number,
   calendarType: CalendarType
 }) => {
+ const ref = useRef(null);
+ const [highlight, setHighlight] = useState(false);
  const [isOpen, setIsOpen] = useState(false);
  const calendarItemBorderConfiguration = getCalendarItemBorderConfiguration(index, calendarType);
 
- const inputDate = new Date(data?.date);
+ const selector = useMemo(() => {
+    return makeSelectActivityListPerDate(date);
+}, [date]);
+
+const filteredActivities = useAppSelector(selector, shallowEqual);
+
+useEffect(() => {
+    const element = ref.current;
+
+    if (!element) return;
+
+    const monitorConfig = {
+      element,
+      getData() {
+
+      },
+      // @ts-expect-error payload
+      onDrag(payload) {
+        const { location } = payload;
+
+        const target = location.current.dropTargets[0];
+
+        if (!target) {
+          return;
+        }
+
+        if (checkTheSameDay({firstDate: new Date(target.data.date), secondDate: new Date(date)})) {
+          setHighlight(true);
+        } else {
+          setHighlight(false);
+        }
+      },
+      onDrop() {
+        setHighlight(false);
+      },
+    }
+
+    return monitorForElements(monitorConfig);
+  }, [date]);
+
+ const inputDate = date;
  const today = new Date();
 
  const isToday = inputDate.getFullYear() === today.getFullYear() 
   && inputDate.getMonth() === today.getMonth() 
   && inputDate.getDate() === today.getDate();
 
-  const parsedDateValue = new Date(data?.date).getDate()
+  const parsedDateValue = date.getDate();
+
 
   const handleSideBarOpen = () => {
     setIsOpen(true);
@@ -39,6 +87,9 @@ export const useCalendarGridItem = ({
   parsedDateValue,
   handleSideBarOpen,
   handleSideBarClose,
-  isOpen
+  isOpen,
+  filteredActivities,
+  ref,
+  highlight
  }
 }

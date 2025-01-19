@@ -1,9 +1,9 @@
 import { configureStore } from '@reduxjs/toolkit'
-import { datesReducer } from './dates'
+import { activitiesReducer } from './activity'
 
 export const store = configureStore({
   reducer: {
-    dates: datesReducer
+    activities: activitiesReducer
   },
 })
 

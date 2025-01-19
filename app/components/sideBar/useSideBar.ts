@@ -1,5 +1,7 @@
 import { useState } from "react";
-import { DateType } from "../../shared/types/DateType";
+import { useAppSelector } from "@/app/hooks";
+import { selectActivityList } from "@/app/store/activity";
+import { activityFilter } from "@/app/utils";
 
 const options: Intl.DateTimeFormatOptions = {
   day: 'numeric', 
@@ -7,10 +9,11 @@ const options: Intl.DateTimeFormatOptions = {
   year: 'numeric'
 }
 
-export const useSideBar = ({data}: {data: DateType}) => {
+export const useSideBar = ({date}: {date: Date}) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const activityList = useAppSelector(selectActivityList);
+  const filteredActivities = activityFilter({activityList, date})
 
-  const date = new Date(data?.date)
   const formattedDate = new Intl.DateTimeFormat("uk-UA", options).format(date);
 
   const openModalHandler = () => {
@@ -25,6 +28,7 @@ export const useSideBar = ({data}: {data: DateType}) => {
     formattedDate,
     isModalOpen,
     openModalHandler,
-    closeModalHandler
+    closeModalHandler,
+    filteredActivities
   };
 }

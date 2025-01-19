@@ -5,7 +5,18 @@ export const checkTheSameDay = ({
   firstDate: Date, 
   secondDate: Date
 }) => {
-  return firstDate.getUTCFullYear() === secondDate.getUTCFullYear() &&
-  firstDate.getUTCMonth() === secondDate.getUTCMonth() &&
-  firstDate.getUTCDate() === secondDate.getUTCDate();
+  const getUTCDateParts = (date: Date) => ({
+    year: date.getFullYear(),
+    month: date.getMonth(),
+    day: date.getDate(),
+  });
+
+  const firstDateParts = getUTCDateParts(firstDate);
+  const secondDateParts = getUTCDateParts(secondDate);
+
+  return (
+    firstDateParts.year === secondDateParts.year &&
+    firstDateParts.month === secondDateParts.month &&
+    firstDateParts.day === secondDateParts.day
+  );
 }

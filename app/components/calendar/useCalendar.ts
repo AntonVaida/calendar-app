@@ -1,5 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { CalendarType } from "@/app/shared/types/CalendarType";
+import { getAllCurrentCalendarDates } from "@/app/utils";
 
 const CURRENT_YEAR = new Date().getFullYear();
 const CURRENT_MONTH = new Date().getMonth();
@@ -42,6 +43,20 @@ export const useCalendar = () => {
     setWeekCoefficient(prevWeekCoefficient => prevWeekCoefficient + 1)
   }
 
+  const dates = useMemo(() => {
+    return getAllCurrentCalendarDates({
+    calendarType,
+    year,
+    month,
+    weekCoefficient,
+  });
+  }, [
+    calendarType, 
+    year, 
+    month, 
+    weekCoefficient,
+  ])
+
 
   return {
     year,
@@ -50,6 +65,7 @@ export const useCalendar = () => {
     weekCoefficient,
     setCalendarType,
     handleArrowBackButton: calendarType === CalendarType.MONTH ? handlePrevMonth : handlePrevWeek,
-    handleArrowNextButton: calendarType === CalendarType.MONTH ? handleNextMonth : handleNextWeek
+    handleArrowNextButton: calendarType === CalendarType.MONTH ? handleNextMonth : handleNextWeek,
+    dates
   }
 }

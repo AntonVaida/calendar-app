@@ -1,23 +1,19 @@
 import { ActivityType } from "@/app/shared/types/ActivityType"
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
-import { selectDates, datesActions } from "@/app/store/dates";
-import { DateType } from "@/app/shared/types/DateType";
+import { selectActivityList, activitiesActions } from "@/app/store/activity";
 
 export const useSideBarActivitiesItem = ({
   activity,
-  data
 }:{
   activity: ActivityType,
-  data: DateType
 }) => {
   const dispatch = useAppDispatch();
-  const dates = useAppSelector(selectDates);
+  const activityList = useAppSelector(selectActivityList);
 
   const handleDeleteActivity = () => {
     try {
-      dispatch(datesActions.deleteActivities({
-        dateList: dates,
-        date: data?.date,
+      dispatch(activitiesActions.deleteActivities({
+        activityList,
         activityId: activity?.id
       }));
     } catch (e: unknown) {

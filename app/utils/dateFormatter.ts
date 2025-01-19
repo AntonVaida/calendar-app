@@ -10,8 +10,8 @@ export const dateFormatter = ({
   year: number, 
   month: number,
   calendarType: CalendarType,
-  firstDate: string,
-  lastDate: string
+  firstDate: Date,
+  lastDate: Date
 }): string => {
   const options: Intl.DateTimeFormatOptions = calendarType === CalendarType.WEEK ? {
     day: 'numeric', 
@@ -23,13 +23,10 @@ export const dateFormatter = ({
   };
 
   if (calendarType === CalendarType.WEEK) {
-    const firstDay = new Date(firstDate);
-    const lastDay = new Date(lastDate);
-
     const formatter = new Intl.DateTimeFormat('uk-UA', options);
 
-    const start = formatter.format(firstDay);
-    const end = formatter.format(lastDay);
+    const start = formatter.format(firstDate);
+    const end = formatter.format(lastDate);
 
     return `${start} - ${end}`;
   }

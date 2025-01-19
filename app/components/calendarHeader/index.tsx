@@ -14,7 +14,8 @@ export const CalendarHeader = ({
   month,
   year,
   handleArrowBackButton,
-  handleArrowNextButton
+  handleArrowNextButton,
+  dates
 }: {
   calendarType: CalendarType, 
   setCalendarType: Dispatch<SetStateAction<CalendarType>>;
@@ -22,8 +23,9 @@ export const CalendarHeader = ({
   year: number;
   handleArrowBackButton: () => void;
   handleArrowNextButton: () => void;
+  dates: Date[];
 }) => {
-  const { formattedDate } = useCalendarHeader({month, year, calendarType})
+  const { formattedDate } = useCalendarHeader({month, year, calendarType, dates})
 
   return (
     <Box sx={(theme) => ({

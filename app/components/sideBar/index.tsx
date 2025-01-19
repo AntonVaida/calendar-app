@@ -1,6 +1,5 @@
 import SwipeableDrawer from '@mui/material/SwipeableDrawer';
 import { Box, Typography } from '@mui/material';
-import { DateType } from '../../shared/types/DateType';
 import { useSideBar } from './useSideBar';
 import { AddButton, CloseButton } from '@/app/ui-components';
 import { DayModal } from '../dayModal';
@@ -10,26 +9,27 @@ export const SideBar = ({
   isOpen, 
   handleSideBarClose, 
   handleSideBarOpen, 
-  data
+  date
 }: {
   isOpen: boolean, 
   handleSideBarClose: () => void, 
   handleSideBarOpen: () => void,
-  data: DateType
+  date: Date
 }) => {
   const { 
     formattedDate, 
     isModalOpen,
     openModalHandler,
-    closeModalHandler 
-  } = useSideBar({data});
+    closeModalHandler,
+    filteredActivities
+  } = useSideBar({date});
 
   return (
     <>
       <DayModal
         isOpen={isModalOpen} 
         handleClose={closeModalHandler}
-        data={data}
+        date={date}
       />
       <SwipeableDrawer
         anchor={'right'}
@@ -43,14 +43,14 @@ export const SideBar = ({
           backgroundColor: theme.palette.primary.main,
           paddingTop: "20px",
           paddingBottom: "20px",
-          paddingLeft: "15px",
-          paddingRight: "15px"
         })}>
           <Box sx={{
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
             height: "28px",
+            paddingLeft: "15px",
+            paddingRight: "15px"
           }}>
             <AddButton onClick={openModalHandler} />
             <Typography id="modal-modal-title" variant="caption">
@@ -58,15 +58,19 @@ export const SideBar = ({
             </Typography>
             <CloseButton onClick={handleSideBarClose} />
           </Box>
-          <Box sx={{
-            marginTop: "20px",
-            height: "100%",
-            overflowY: "auto",
-            overflowX: "hidden",
-            boxSizing: "border-box",
-          }}>
-            {data?.activities?.map((activity, index) => (
-              <SideBarActivitiesItem activity={activity} key={index} data={data} />
+          <Box 
+            sx={{
+              marginTop: "20px",
+              maxHeight: "90%",
+              boxSizing: "border-box",
+              overflowY: "auto",
+              overflowX: "hidden",
+              paddingLeft: "15px",
+              paddingRight: "15px"
+            }}
+          >
+            {filteredActivities?.map((activity, index) => (
+              <SideBarActivitiesItem activity={activity} key={index} />
             ))}
           </Box>
         </Box>

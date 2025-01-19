@@ -10,10 +10,10 @@ export const Calendar = () => {
     year, 
     month, 
     calendarType, 
-    weekCoefficient, 
     setCalendarType,
     handleArrowBackButton,
-    handleArrowNextButton
+    handleArrowNextButton,
+    dates
   } = useCalendar()
 
   return (
@@ -25,12 +25,12 @@ export const Calendar = () => {
         year={year}
         handleArrowBackButton={handleArrowBackButton}
         handleArrowNextButton={handleArrowNextButton}
+        dates={dates}
       />
       <CalendarGrid 
         year={year} 
-        month={month}
         calendarType={calendarType} 
-        weekCoefficient={weekCoefficient} 
+        dates={dates}
       />
     </>
     );

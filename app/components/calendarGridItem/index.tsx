@@ -1,18 +1,19 @@
+import { Fragment } from 'react';
+import { SideBar } from '../sideBar';
 import Grid from '@mui/material/Grid2';
 import { Box, Typography } from '@mui/material';
-import { DateType } from '@/app/shared/types/DateType';
 import { useCalendarGridItem } from './useCalendarGridItem';
 import { CalendarType } from '@/app/shared/types/CalendarType';
 import { ActivitiesItem } from '@/app/components/activitiesItem';
-import { SideBar } from '../sideBar';
+import { EmptyActivityItem } from '../emptyActivityItem';
 
 export const CalendarGridItem = ({
-  data,
+  date,
   index,
   calendarType,
   gridItemsHeight
  }: {
-  data: DateType,
+  date: Date,
   index: number,
   calendarType: CalendarType
   gridItemsHeight?: number
@@ -23,30 +24,35 @@ export const CalendarGridItem = ({
     parsedDateValue,
     handleSideBarOpen,
     handleSideBarClose,
-    isOpen
-  } = useCalendarGridItem({data, index, calendarType});
+    isOpen,
+    filteredActivities,
+    ref,
+    highlight
+  } = useCalendarGridItem({date, index, calendarType});
+
 
   return (
-    <>
+    <Fragment>
       <SideBar   
         isOpen={isOpen}
         handleSideBarClose={handleSideBarClose} 
         handleSideBarOpen={handleSideBarOpen} 
-        data={data}
+        date={date}
       />
       <Grid
         onClick={handleSideBarOpen}
         size={1} 
         key={index} 
         sx={(theme) => ({
-          backgroundColor: theme.palette.primary.light,
+          backgroundColor: highlight ? theme.palette.secondary.dark : theme.palette.primary.light,
           ...calendarItemBorderConfiguration,
           borderColor: theme.palette.secondary.dark,
           borderStyle: "solid",
           height: gridItemsHeight ? `${gridItemsHeight}px` : "100%"
         })}
       >
-        <Box 
+        <Box
+          ref={ref}
           sx={{
             height: gridItemsHeight ? `${gridItemsHeight}px` : "100%",
             padding: "10px",
@@ -70,25 +76,27 @@ export const CalendarGridItem = ({
               justifyContent: "center",
               alignItems: "center",
               boxSizing: "border-box",
-              backgroundColor: isToday ? theme.palette.secondary.light : theme.palette.primary.light,
+              backgroundColor: isToday ? theme.palette.secondary.light : "transparent",
             })}>
               <Typography variant={isToday ? "body2" : "body1"}>
                 {parsedDateValue}
               </Typography>
             </Box>
           </Box>
-          <Box sx={{
-            overflowY: "auto",
-            overflowX: "hidden",
-            maxHeight: "100%",
-            boxSizing: "border-box",
-          }}>
-            {data?.activities?.map((activity, index) => (
-              <ActivitiesItem index={index} activity={activity} key={index} />
-            ))}
-          </Box>
+            <Box
+              sx={{
+                maxHeight: "100%",
+                boxSizing: "border-box",
+                overflowY: "auto",
+                overflowX: "hidden"
+              }}>
+                {filteredActivities?.map((activity) => (
+                  <ActivitiesItem index={activity?.id}  activity={activity} key={activity?.id} />
+                ))}
+            </Box>
+            <EmptyActivityItem date={date} />
         </Box>
       </Grid>
-    </>
+    </Fragment>
   )
 }
