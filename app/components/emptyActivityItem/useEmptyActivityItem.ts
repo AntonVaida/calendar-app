@@ -40,7 +40,7 @@ export const useEmptyActivityItem = ({date}: {date: Date}) => {
     };
 
     return dropTargetForElements(dropConfig)
-  }, [])
+  }, [date])
 
   return {
     aboutToDrop,

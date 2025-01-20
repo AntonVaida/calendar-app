@@ -7,7 +7,8 @@ import { makeSelectActivityListPerDate } from "@/app/store/activity";
 import { shallowEqual } from "react-redux";
 import { checkTheSameDay } from "@/app/utils/checkTheSameDay";
 import { monitorForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
-
+import { DateTime } from "luxon";
+import { formatDateToISO } from "@/app/utils";
 
 export const useCalendarGridItem = ({
   date, 
@@ -63,12 +64,10 @@ useEffect(() => {
     return monitorForElements(monitorConfig);
   }, [date]);
 
- const inputDate = date;
- const today = new Date();
+ const inputDate = DateTime.fromISO(formatDateToISO(date), { zone: 'Europe/Kiev' });;
+ const today = DateTime.now().setZone('Europe/Kiev');
 
- const isToday = inputDate.getFullYear() === today.getFullYear() 
-  && inputDate.getMonth() === today.getMonth() 
-  && inputDate.getDate() === today.getDate();
+ const isToday = inputDate.hasSame(today, 'day');;
 
   const parsedDateValue = date.getDate();
 
